@@ -14,7 +14,7 @@ export const query2 = Animal.findOne({
 // Get all animals belonging to the human with primary key 5
 export const query3 = Animal.findAll({
     where: {
-        animal_id: 5
+        humanId: 5 
     }
 })
 
@@ -28,7 +28,7 @@ export const query4 = Animal.findAll({
 // Get all the humans with first names that start with "J"
 export const query5 = Human.findAll({
     where: {
-        fname: { [Op.startsWith]: 'j'}
+        fname: { [Op.startsWith]: 'J'}
     }
 });
 
@@ -53,7 +53,7 @@ export const query7 = Animal.findAll({
 export const query8 = Human.findAll({
     where: {
         email: {
-            [Op.like]: '%gmail'
+            [Op.notLike]: '%gmail%'
         }
     }
 });
@@ -62,10 +62,13 @@ export const query8 = Human.findAll({
 
 // Print a directory of humans and their animals
 export async function printHumansAndAnimals() {
-    for (const human of Human) {
+    const humans = await Human.findAll()
+    const animals = await Animal.findAll()
+
+    for (const human of humans) {
         console.log(`${human.fname}, ${human.lname}`)
-        for (const animal of Animal) {
-            if (animal.animal_id === human.human_id) {
+        for (const animal of animals) {
+            if (animal.humanId === human.humanId) {
                 console.log(`- ${animal.name}, ${animal.species}`)
             }
         }
@@ -75,11 +78,17 @@ export async function printHumansAndAnimals() {
 // Return a Set containing the full names of all humans
 // with animals of the given species.
 export async function getHumansByAnimalSpecies(species) {
+    const people = await Human.findAll()
+    const animals = await Animal.findAll()
+
     const humans = new Set()
-    for (const human of Human) {
-        for (const animal of Animal) {
-            if (animal.animal_id === human.human_id && animal.species === species) {
-                humans.add(`${human.fname}, ${human.lname}`)
+    for (const human of people) {
+        for (const animal of animals) {
+            if (animal.humanId === human.humanId && animal.species === species) {
+                const humanName = `${human.fname} ${human.lname}`
+                if (!humans.has(humanName)) {
+                    humans.add(humanName)
+                }
             }
         }
     }
