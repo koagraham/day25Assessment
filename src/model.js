@@ -1,4 +1,4 @@
-import { DataTypes, Model } from 'sequelize';
+import sequelize, { DataTypes, Model } from 'sequelize';
 import util from 'util';
 import connectToDB from './db.js';
 
@@ -10,11 +10,35 @@ export class Human extends Model {
   }
 
   getFullName() {
-    // TODO: Implement this method
+    return `${Human.fname}, ${Human.lname}`
   }
 }
 
-// TODO: Human.init()
+Human.init(
+  {
+    humanId: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true
+    },
+    fname: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    lname: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    email: {
+      type: DataTypes.STRING,
+      allowNull: false
+    }
+  },
+  {
+    modelName: 'human',
+    sequelize: db
+  }
+)
 
 export class Animal extends Model {
   [util.inspect.custom]() {
@@ -22,8 +46,32 @@ export class Animal extends Model {
   }
 }
 
-// TODO: Animal.init()
+Animal.init(
+  {
+    animalId: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true
+    },
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    species: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    birth_year: {
+      type: DataTypes.INTEGER
+    }
+  },
+  {
+    modelName: 'animal',
+    sequelize: db
+  }
+)
 
-// TODO: Define Relationship
+Human.hasMany(Animal, { foreignKey: 'humanId' })
+Animal.belongsTo(Human, { foreignKey: 'humanId' })
 
 export default db;
